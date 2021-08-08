@@ -30,10 +30,16 @@
                       <textarea class="form-control" name="review[body]" required id="body" cols="30" rows="3"></textarea>
                     <div class="valid-feedback">Looks good!</div>
                     </div>
-                
-                  
                     <button class="btn btn-success">Submit</button>
                   </form>
+
+                  <% for (let review of camp.reviews) { %>
+                        <div class="mb-3">
+                          <p>Rating: <%= review.rating %> </p>
+                          <p>Review: <%= review.body %> </p>
+                        </div>
+                    
+                    <% } %>  
             </div>
         </div>
  

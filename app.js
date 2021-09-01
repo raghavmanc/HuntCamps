@@ -9,6 +9,7 @@ const catchAsync = require('./Utils/catchAsync');
 const ExpressError = require('./Utils/ExpressError');
 const Review = require('./models/review');
 const campgrounds = require('./routes/campgrounds');
+const reviews = require('./routes/reviews');
 
 //MONGOOSE CONNECTION-------------------------------------------------------------------
 
@@ -31,6 +32,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use('/campgrounds',campgrounds);
+app.use('/reviews',reviews);
 
 app.get('/', (req,res) => {
     res.render('home');

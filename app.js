@@ -34,6 +34,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use('/campgrounds',campgrounds);
 app.use('/reviews',reviews);
+app.use(express.static(path.join(__dirname,'public')));
 
 app.get('/', (req,res) => {
     res.render('home');

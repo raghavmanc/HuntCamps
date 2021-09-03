@@ -2,14 +2,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const path = require('path');
-const Campground = require('./models/campground');
+const session = require('express-session');
 const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
-const catchAsync = require('./Utils/catchAsync');
 const ExpressError = require('./Utils/ExpressError');
-const Review = require('./models/review');
+
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
+
 
 //MONGOOSE CONNECTION-------------------------------------------------------------------
 
@@ -33,31 +33,24 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use('/campgrounds',campgrounds);
-app.use('/reviews',reviews);
+app.use('/campgrounds/:id/reviews',reviews);
 app.use(express.static(path.join(__dirname,'public')));
+
+const sessionConfig = {
+    secret: 'randomKey',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: Date.now() + 1000 * 60*60*24*7,
+        maxAge: 1000 * 60*60*24*7
+    }
+    
+}
+app.use(session(sessionConfig));
 
 app.get('/', (req,res) => {
     res.render('home');
 })
-
-
-
- app.post("/campgrounds/:id/reviews", catchAsync(async(req,res) => {
-     const campground = await Campground.findById(req.params.id);
-     const review = new Review(req.body.review);
-     campground.reviews.push(review);
-     await review.save();
-     await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-
- }))
-
- app.delete("/campgrounds/:id/reviews/:reviewId", catchAsync(async (req, res) => {
-     const { id, reviewId } = req.params;
-     await Campground.findByIdAndUpdate(id, { $pull: {reviews: reviewId} });
-     await Review.findByIdAndDelete(reviewId);
-     res.redirect(`/campgrounds/${id}`);
- }))
 
  app.all('*',(req,res,next) => {
      next(new ExpressError('Page Not Found',404))
